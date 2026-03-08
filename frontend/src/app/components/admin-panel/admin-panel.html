@@ -1,0 +1,179 @@
+<div class="admin-container">
+
+  <div class="sidebar">
+    <h2>Yönetim Merkezi</h2>
+    <ul>
+      <li (click)="setTab('departments')" [class.active]="activeTab === 'departments'">
+        <span>Bölümler</span>
+      </li>
+      <li (click)="setTab('courses')" [class.active]="activeTab === 'courses'">
+        <span>Dersler</span>
+      </li>
+      <li (click)="setTab('teachers')" [class.active]="activeTab === 'teachers'">
+        <span>Öğretmenler</span>
+      </li>
+      <li (click)="setTab('students')" [class.active]="activeTab === 'students'">
+        <span>Öğrenciler</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="content">
+
+    <div *ngIf="activeTab === 'departments'" class="tab-panel">
+      <h2>Bölüm Yönetimi</h2>
+      <div class="form-box">
+        <input type="text" [(ngModel)]="newDepartment.name" placeholder="Yeni bölüm adı" class="modern-input" />
+        <button (click)="addDepartment()" class="btn btn-primary">Ekle</button>
+      </div>
+
+      <div class="table-container">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Bölüm Adı</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let dept of departments">
+              <td>{{ dept.id }}</td>
+              <td>{{ dept.name }}</td>
+
+               <td>
+                <button (click)="updateDepartment(dept.id)" class="btn btn-warning btn-sm" style="margin-right: 5px;">Güncelle</button>
+                <button (click)="deleteDepartment(dept.id)" class="btn btn-danger btn-sm">Sil</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'courses'" class="tab-panel">
+      <h2>Ders Yönetimi</h2>
+      <div class="form-box form-box-multi">
+        <input type="text" [(ngModel)]="newCourse.name" placeholder="Ders adı" class="modern-input" />
+        <input type="text" [(ngModel)]="newCourse.code" placeholder="Ders kodu" class="modern-input" />
+        <input type="number" [(ngModel)]="newCourse.akts" placeholder="AKTS" class="modern-input" />
+        <input type="number" [(ngModel)]="newCourse.credit" placeholder="Kredi" class="modern-input" />
+        
+        <select [(ngModel)]="newCourse.departmentId" class="modern-select">
+          <option value="0">Bölüm Seç</option>
+          <option *ngFor="let dept of departments" [value]="dept.id">
+            {{ dept.name }}
+          </option>
+        </select>
+        <button (click)="addCourse()" class="btn btn-primary">Ekle</button>
+      </div>
+
+      <div class="table-container">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Ders</th>
+              <th>Kod</th>
+              <th>AKTS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let course of courses">
+              <td>{{ course.id }}</td>
+              <td>{{ course.name }}</td>
+              <td>{{ course.code }}</td>
+              <td>{{ course.akts }}</td>
+               <td>
+                <button (click)="updateCourse(course.id)" class="btn btn-warning btn-sm" style="margin-right: 5px;">Güncelle</button>
+                <button (click)="deleteCourse(course.id)" class="btn btn-danger btn-sm">Sil</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'teachers'" class="tab-panel">
+      <h2>Öğretmen Yönetimi</h2>
+      <div class="form-box form-box-multi">
+        <input type="text" [(ngModel)]="newTeacher.fullName" placeholder="Ad Soyad" class="modern-input" />
+        <input type="email" [(ngModel)]="newTeacher.email" placeholder="E-posta" class="modern-input" />
+        
+        <select [(ngModel)]="newTeacher.departmentId" class="modern-select">
+          <option value="0">Bölüm Seç</option>
+          <option *ngFor="let dept of departments" [value]="dept.id">
+            {{ dept.name }}
+          </option>
+        </select>
+        <button (click)="addTeacher()" class="btn btn-primary">Ekle</button>
+      </div>
+
+      <div class="table-container">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Ad Soyad</th>
+              <th>E-posta</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let teacher of teachers">
+              <td>{{ teacher.id }}</td>
+              <td>{{ teacher.fullName }}</td>
+              <td>{{ teacher.email }}</td>
+               <td>
+                <button (click)="updateTeacher(teacher.id)" class="btn btn-warning btn-sm" style="margin-right: 5px;">Güncelle</button>
+                <button (click)="deleteTeacher(teacher.id)" class="btn btn-danger btn-sm">Sil</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'students'" class="tab-panel">
+      <h2>Öğrenci Yönetimi</h2>
+      <div class="form-box form-box-multi">
+        <input type="text" [(ngModel)]="newStudent.fullName" placeholder="Ad Soyad" class="modern-input" />
+        <input type="text" [(ngModel)]="newStudent.studentNumber" placeholder="Öğrenci No" class="modern-input" />
+        <input type="email" [(ngModel)]="newStudent.email" placeholder="E-posta" class="modern-input" />
+        
+        <select [(ngModel)]="newStudent.departmentId" class="modern-select">
+          <option value="0">Bölüm Seç</option>
+          <option *ngFor="let dept of departments" [value]="dept.id">
+            {{ dept.name }}
+          </option>
+        </select>
+        <button (click)="addStudent()" class="btn btn-primary">Ekle</button>
+      </div>
+
+      <div class="table-container">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Öğrenci No</th>
+              <th>Ad Soyad</th>
+              <th>E-posta</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let student of students">
+              <td>{{ student.id }}</td>
+              <td>{{ student.studentNumber }}</td>
+              <td>{{ student.fullName }}</td>
+              <td>{{ student.email }}</td>
+              <td>
+                <button (click)="updateStudent(student.id)" class="btn btn-warning btn-sm" style="margin-right: 5px;">Güncelle</button>
+                <button (click)="deleteStudent(student.id)" class="btn btn-danger btn-sm">Sil</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>

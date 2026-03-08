@@ -1,0 +1,27 @@
+<div class="login-container">
+    <div class="col-md-4 col-sm-8">
+        <div class="card login-card">
+            <div class="card-header text-center">
+                <h3 class="mb-0">OBS GİRİŞ</h3>
+                <small class="text-light-50">Öğrenci Bilgi Sistemi</small>
+            </div>
+            <div class="card-body p-5">
+                <form (ngSubmit)="onLogin()">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-secondary">E-posta Adresi</label>
+                        <input type="email" name="email" [(ngModel)]="loginObj.email" class="form-control"
+                            placeholder="ornek@universite.edu.tr" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-secondary">Parola</label>
+                        <input type="password" name="password" [(ngModel)]="loginObj.password" class="form-control"
+                            placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-login w-100 shadow-sm">
+                        GİRİŞ YAP
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

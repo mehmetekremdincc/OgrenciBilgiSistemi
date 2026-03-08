@@ -1,0 +1,163 @@
+<div class="teacher-dashboard">
+
+  <aside class="teacher-sidebar">
+    <div class="profile-section">
+      <div class="avatar">{{ userName.charAt(0).toUpperCase() }}</div>
+      <h3>{{ userName }}</h3>
+      <span>Öğretim Görevlisi</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul>
+        <li (click)="setTab('overview')" [class.active]="activeTab === 'overview'">
+          <i class="fas fa-home"></i> Genel Bakış
+        </li>
+        <li (click)="setTab('courses')" [class.active]="activeTab === 'courses'">
+          <i class="fas fa-book-reader"></i> Derslerim
+        </li>
+        <li (click)="setTab('students')" [class.active]="activeTab === 'students'">
+          <i class="fas fa-users"></i> Öğrencilerim
+        </li>
+        <li (click)="setTab('grades')" [class.active]="activeTab === 'grades'">
+          <i class="fas fa-marker"></i> Not Girişi
+        </li>
+      </ul>
+    </nav>
+
+    <button class="logout-btn" (click)="logout()">
+      <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+    </button>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-bar">
+      <h1>
+        {{ activeTab === 'overview' ? 'Panel Özeti' :
+           activeTab === 'courses' ? 'Derslerim' :
+           activeTab === 'students' ? 'Öğrencilerim' :
+           activeTab === 'grades' ? 'Not Yönetimi' : (activeTab | titlecase) }}
+      </h1>
+    </header>
+
+    <div *ngIf="activeTab === 'overview'" class="tab-content fade-in">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <i class="fas fa-graduation-cap"></i>
+          <div>
+            <h4>Aktif Ders Sayısı</h4>
+            <p>{{ myCourses.length }}</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-users"></i>
+          <div>
+            <h4>Toplam Öğrenci</h4>
+            <p>{{ totalStudents }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="recent-card" *ngIf="nextLesson">
+        <h3>Bugünkü Hatırlatma</h3>
+        <p>
+          Bugün saat <strong>{{ nextLesson.time }}</strong>'da <strong>{{ nextLesson.course }}</strong> dersiniz var.
+        </p>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'courses'" class="tab-content fade-in">
+      <div class="table-container">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Ders Adı</th>
+              <th>Kod</th>
+              <th>AKTS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let course of myCourses">
+              <td>{{ course.id }}</td>
+              <td>{{ course.name }}</td>
+              <td>{{ course.code }}</td>
+              <td>{{ course.akts }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'students'" class="tab-content fade-in">
+      <div class="table-container">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Ad Soyad</th>
+              <th>E-posta</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let student of myStudents">
+              <td>#{{ student.id }}</td>
+              <td>{{ student.fullName }}</td>
+              <td>{{ student.email }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'grades'" class="tab-content fade-in">
+      <div class="card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+          <select [(ngModel)]="selectedCourseId" (change)="onCourseSelected()" class="modern-select">
+            <option [value]="0">Ders Seçin</option>
+            <option *ngFor="let c of myCourses" [value]="c.id">{{ c.name }}</option>
+          </select>
+          <button class="btn btn-primary" (click)="saveGrades()" [disabled]="selectedCourseId == 0">
+            Değişiklikleri Kaydet
+          </button>
+        </div>
+
+        <div class="table-container" *ngIf="selectedCourseStudents.length > 0; else noStudents">
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th>Öğrenci No</th>
+                <th>Ad Soyad</th>
+                <th style="width: 100px;">Vize</th>
+                <th style="width: 100px;">Final</th>
+                <th>Ortalama</th>
+                <th>Durum</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of selectedCourseStudents">
+                <td>#{{ s.studentId }}</td>
+                <td>{{ s.fullName }}</td>
+                <td>
+                  <input type="number" [(ngModel)]="s.midterm" class="grade-input" min="0" max="100">
+                </td>
+                <td>
+                  <input type="number" [(ngModel)]="s.final" class="grade-input" min="0" max="100">
+                </td>
+                <td>{{ (s.midterm * 0.4 + s.final * 0.6) | number:'1.1-1' }}</td>
+                <td>
+                  <span class="status-badge" 
+                        [ngClass]="(s.midterm * 0.4 + s.final * 0.6) >= 50 ? 'success' : 'danger'">
+                    {{ (s.midterm * 0.4 + s.final * 0.6) >= 50 ? 'Geçti' : 'Kaldı' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noStudents>
+          <p class="text-center text-muted py-4">Lütfen bir ders seçin veya derse kayıtlı öğrenci bulunmuyor.</p>
+        </ng-template>
+      </div>
+    </div>
+  </main>
+</div>
