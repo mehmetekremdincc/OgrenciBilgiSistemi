@@ -3,37 +3,41 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
- providedIn: 'root'
+  providedIn: 'root'
 })
 export class TeacherService {
- getMyStudents: any;
- getMyCourses:any;
+  private apiUrl = 'https://localhost:7204/api/Teacher';
 
- private apiUrl = 'https://localhost:7204/api/Teacher';
-  getStudentsByCourse: any;
-  updateGrades: any;
+  constructor(private http: HttpClient) {}
 
- constructor(private http: HttpClient) {}
+  // --- ADMIN PANEL İÇİN KULLANILANLAR ---
+  getTeachers(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
+  }
 
- getTeachers(): Observable<any[]> {
-   return this.http.get<any[]>(this.apiUrl);
- }
+  addTeacher(teacher: any): Observable<any> {
+    return this.http.post(this.apiUrl, teacher);
+  }
 
- addTeacher(teacher: any): Observable<any> {
-   return this.http.post(this.apiUrl, teacher);
- }
-// TeacherService sınıfının içine, en alta ekle:
+  // --- ÖĞRETMEN DASHBOARD İÇİN KULLANILANLAR ---
+  
+  getTeacherProfile(teacherId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/get-profile?teacherId=${teacherId}`);
+  }
 
-getDashboardCourses(teacherId: number = 1): Observable<any[]> {
-  return this.http.get<any[]>(`${this.apiUrl}/dashboard-courses?teacherId=${teacherId}`);
-}
+  getDashboardCourses(teacherId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/dashboard-courses?teacherId=${teacherId}`);
+  }
 
-getDashboardStudents(courseId: number): Observable<any[]> {
-  return this.http.get<any[]>(`${this.apiUrl}/dashboard-students/${courseId}`);
-}
+  getDashboardMyStudents(teacherId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/dashboard-my-students?teacherId=${teacherId}`);
+  }
 
-updateDashboardGrades(grades: any[]): Observable<any> {
-  return this.http.post(`${this.apiUrl}/dashboard-bulk-update`, grades);
-}
+  getDashboardStudents(courseId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/dashboard-students/${courseId}`);
+  }
 
+  updateDashboardGrades(grades: any[]): Observable<any> {
+    return this.http.post(`${this.apiUrl}/dashboard-bulk-update`, grades);
+  }
 }

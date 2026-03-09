@@ -17,6 +17,8 @@ namespace OgrenciBilgiSistemiProject.Controllers
             _context = context;
         }
 
+        // --- ADMIN PANEL METOTLARI (DOKUNULMADI) ---
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -37,19 +39,17 @@ namespace OgrenciBilgiSistemiProject.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(TeacherCreateDto dto)
         {
-            // 1. Önce User tablosuna ekliyoruz (Giriş bilgileri)
             var newUser = new User
             {
                 Email = dto.Email,
-                PasswordHash = "123456", // Sabit şifre
-                RoleId = 2, // Öğretmen Rolü
-                PasswordSalt = Array.Empty<byte>() // Boş bırakılmaz
+                PasswordHash = "123456",
+                RoleId = 2,
+                PasswordSalt = Array.Empty<byte>()
             };
 
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
-            // 2. Teacher tablosuna ekliyoruz (Profil bilgileri)
             var teacher = new Teacher
             {
                 UserId = newUser.Id,
@@ -65,6 +65,24 @@ namespace OgrenciBilgiSistemiProject.Controllers
             return Ok(new { message = "Öğretmen başarıyla eklendi." });
         }
 
+        // --- ÖĞRETMEN DASHBOARD METOTLARI (YENİ VE GÜNCELLENMİŞ) ---
+
+        // api/Teacher/get-profile?teacherId=1
+        [HttpGet("get-profile")]
+        public async Task<IActionResult> GetProfile(int teacherId)
+        {
+            var teacher = await _context.Teachers
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.Id == teacherId);
+
+            if (teacher == null) return NotFound(new { message = "Öğretmen bulunamadı." });
+
+            return Ok(new
+            {
+                FullName = teacher.FullName,
+                Email = teacher.User != null ? teacher.User.Email : "Email yok"
+            });
+        }
 
         // api/Teacher/dashboard-courses?teacherId=1
         [HttpGet("dashboard-courses")]
@@ -82,17 +100,39 @@ namespace OgrenciBilgiSistemiProject.Controllers
             return Ok(courses);
         }
 
+        // api/Teacher/dashboard-my-students?teacherId=1
+        [HttpGet("dashboard-my-students")]
+        public async Task<IActionResult> GetMyStudents(int teacherId)
+        {
+            // Hocanın kendi derslerindeki TÜM öğrencileri tekrarsız getirir ("Öğrencilerim" sekmesi için)
+            var students = await _context.StudentCourseOfferings
+                .Include(sco => sco.Student)
+                .ThenInclude(s => s.User)
+                .Where(sco => sco.CourseOffering.TeacherId == teacherId)
+                .Select(sco => new
+                {
+                    Id = sco.Student.Id,
+                    FullName = sco.Student.FullName,
+                    Email = sco.Student.User != null ? sco.Student.User.Email : ""
+                })
+                .Distinct()
+                .ToListAsync();
+
+            return Ok(students);
+        }
+
         // api/Teacher/dashboard-students/{courseOfferingId}
         [HttpGet("dashboard-students/{courseOfferingId}")]
         public async Task<IActionResult> GetDashboardStudents(int courseOfferingId)
         {
+            // Sadece seçilen dersin öğrencilerini notlarıyla getirir ("Not Girişi" sekmesi için)
             var students = await _context.StudentCourseOfferings
                 .Where(sco => sco.CourseOfferingId == courseOfferingId)
                 .Include(sco => sco.Student)
                 .Include(sco => sco.Grade)
                 .Select(sco => new CourseStudentResponseDto
                 {
-                    Id = sco.Id, // SCO ID
+                    Id = sco.Id,
                     StudentId = sco.Student.Id,
                     FullName = sco.Student.FullName,
                     Midterm = (double?)(sco.Grade != null ? sco.Grade.Midterm : 0),
@@ -109,6 +149,7 @@ namespace OgrenciBilgiSistemiProject.Controllers
             {
                 var grade = await _context.Grades
                     .FirstOrDefaultAsync(g => g.StudentCourseOfferingId == dto.ScoId);
+
                 if (grade != null)
                 {
                     grade.Midterm = dto.Midterm;
@@ -120,9 +161,7 @@ namespace OgrenciBilgiSistemiProject.Controllers
                 }
             }
             await _context.SaveChangesAsync();
-            return Ok(new { message = "Başarılı" });
+            return Ok(new { message = "Notlar başarıyla kaydedildi." });
         }
-
-
     }
 }
