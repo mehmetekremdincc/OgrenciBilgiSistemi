@@ -26,20 +26,27 @@ export class LoginComponent {
   onLogin() {
     this.authService.login(this.loginObj).subscribe({
       next: (res: any) => {
-
         console.log("Backend'den gelen yanıt:", res);
 
         this.authService.saveToken(res.token);
+        const role = res.role; 
 
-        const role = res.role; // ✅ DOĞRUSU BU
+        // DASHBOARD'LARIN ÇALIŞMASI İÇİN KULLANICIYI HAFIZAYA KAYDEDİYORUZ
+        const userData = {
+          role: res.role,
+          teacherId: res.teacherId, // Backend'den gelecek
+          studentId: res.studentId  // Backend'den gelecek
+        };
+        localStorage.setItem('currentUser', JSON.stringify(userData));
 
+        // ROL İSİMLERİ VERİTABANIYLA EŞLEŞECEK ŞEKİLDE DÜZELTİLDİ
         if (role === "Admin") {
           this.router.navigate(['/admin-panel']);
         }
-        else if (role === "Ogretmen") {
+        else if (role === "Teacher") { 
           this.router.navigate(['/teacher-dashboard']);
         }
-        else if (role === "Ogrenci") {
+        else if (role === "Student") {
           this.router.navigate(['/student-dashboard']);
         }
         else {

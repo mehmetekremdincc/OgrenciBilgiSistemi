@@ -24,8 +24,11 @@ namespace OgrenciBilgiSistemiProject.Services
 
         public LoginResponse? Login(LoginRequest request)
         {
+            // Öğretmen ve Öğrenci tablolarını da Include ile çekiyoruz ki ID'lerine ulaşabilelim
             var user = _context.Users
-                .Include(u => u.Role)   // 🔥 BURASI ÇOK ÖNEMLİ
+                .Include(u => u.Role)
+                .Include(u => u.Teacher) // <-- YENİ
+                .Include(u => u.Student) // <-- YENİ
                 .FirstOrDefault(u => u.Email == request.Email);
 
             if (user == null) return null;
@@ -46,7 +49,10 @@ namespace OgrenciBilgiSistemiProject.Services
             {
                 Username = user.Email,
                 Role = user.Role.Name,
-                Token = token
+                Token = token,
+                // Dashboardların çalışması için ID'leri de yolluyoruz (Boşsa null gider)
+                TeacherId = user.Teacher?.Id,
+                StudentId = user.Student?.Id
             };
         }
     }

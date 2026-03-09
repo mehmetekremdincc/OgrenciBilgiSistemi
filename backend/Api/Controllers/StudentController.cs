@@ -20,6 +20,8 @@ namespace OgrenciBilgiSistemiProject.Controllers
             _mapper = mapper;
         }
 
+        // --- ADMIN PANEL METOTLARI (DOKUNULMADI) ---
+
         [HttpGet]
         public async Task<IActionResult> GetAllStudents()
         {
@@ -100,6 +102,7 @@ namespace OgrenciBilgiSistemiProject.Controllers
                 return BadRequest(new { message = "Veritabanı Hatası: " + innerError });
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateStudent(int id, StudentUpdateDto dto)
         {
@@ -126,6 +129,52 @@ namespace OgrenciBilgiSistemiProject.Controllers
 
             await _context.SaveChangesAsync();
             return Ok(new { message = "Öğrenci silindi" });
+        }
+
+        // --- ÖĞRENCİ DASHBOARD İÇİN YENİ EKLENEN METOTLAR ---
+
+        // api/Student/get-profile?studentId=1
+        [HttpGet("get-profile")]
+        public async Task<IActionResult> GetProfile(int studentId)
+        {
+            var student = await _context.Students
+                .Include(s => s.User)
+                .Include(s => s.Department)
+                .FirstOrDefaultAsync(s => s.Id == studentId);
+
+            if (student == null) return NotFound(new { message = "Öğrenci bulunamadı." });
+
+            return Ok(new
+            {
+                FullName = student.FullName,
+                StudentNumber = student.StudentNumber,
+                Email = student.User != null ? student.User.Email : "Email yok",
+                DepartmentName = student.Department != null ? student.Department.Name : "Departman Yok"
+            });
+        }
+
+        // api/Student/my-grades?studentId=1
+        [HttpGet("my-grades")]
+        public async Task<IActionResult> GetMyGrades(int studentId)
+        {
+            var grades = await _context.StudentCourseOfferings
+                .Where(sco => sco.StudentId == studentId && sco.IsActive)
+                .Include(sco => sco.CourseOffering)
+                    .ThenInclude(co => co.Course)
+                .Include(sco => sco.CourseOffering)
+                    .ThenInclude(co => co.Teacher)
+                .Include(sco => sco.Grade)
+                .Select(sco => new
+                {
+                    CourseName = sco.CourseOffering.Course.Name,
+                    CourseCode = sco.CourseOffering.Course.Code,
+                    TeacherName = sco.CourseOffering.Teacher.FullName,
+                    Akts = sco.CourseOffering.Course.Akts,
+                    Midterm = sco.Grade != null ? sco.Grade.Midterm : 0,
+                    Final = sco.Grade != null ? sco.Grade.Final : 0
+                }).ToListAsync();
+
+            return Ok(grades);
         }
     }
 }

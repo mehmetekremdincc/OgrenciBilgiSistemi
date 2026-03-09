@@ -1,0 +1,194 @@
+.teacher-dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.teacher-sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #2c3e50 0%, #1e293b 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 3px 0 15px rgba(0,0,0,0.18);
+}
+
+.profile-section {
+  padding: 2rem 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid #34495e;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  background: #1abc9c;
+  color: white;
+  font-size: 2.2rem;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.profile-section h3 {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 1.3rem;
+}
+
+.profile-section span {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 1rem 0;
+  margin: 0;
+}
+
+.sidebar-nav li {
+  padding: 1rem 1.8rem;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.05rem;
+}
+
+.sidebar-nav li:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.sidebar-nav li.active {
+  background: #1abc9c;
+  font-weight: 500;
+}
+
+.logout-btn {
+  margin-top: auto;
+  margin: 1.5rem;
+  padding: 0.9rem;
+  background: rgba(231,76,60,0.9);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  background: #c0392b;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  background: #fff;
+}
+
+.top-bar {
+  margin-bottom: 2rem;
+}
+
+.top-bar h1 {
+  margin: 0;
+  color: #1e293b;
+  font-weight: 700;
+  font-size: 1.8rem;
+}
+
+.tab-content {
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.8rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.stat-card i {
+  font-size: 2.4rem;
+  color: #1abc9c;
+}
+
+.stat-card h4 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+  color: #64748b;
+}
+
+.stat-card p {
+  margin: 0;
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.recent-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.8rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.grade-input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.status-badge {
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.success { background: #d1fae5; color: #065f46; }
+.danger  { background: #fee2e2; color: #991b1b; }
+
+/* Önceki modern-table, modern-select, btn vs. stilleri aynı kalabilir, sadece ekle */
+.btn-primary {
+  background: #1abc9c;
+  border: none;
+  padding: 0.8rem 1.6rem;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background: #16a085;
+}
+
+.card { 
+  background: white; 
+  border-radius: 12px; 
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07); 
+}

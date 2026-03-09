@@ -1,1 +1,100 @@
-<p>student-dashboard works!</p>
+<div class="teacher-dashboard"> <aside class="teacher-sidebar">
+    <div class="profile-section">
+      <div class="avatar">{{ userName.charAt(0).toUpperCase() }}</div>
+      <h3>{{ userName }}</h3>
+      <span class="d-block mt-1" style="font-size: 0.85rem; opacity: 0.8;">{{ studentNumber }}</span>
+      <span style="font-size: 0.8rem; opacity: 0.8;">{{ departmentName }}</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul>
+        <li (click)="setTab('overview')" [class.active]="activeTab === 'overview'">
+          <i class="fas fa-home"></i> Genel Bakış
+        </li>
+        <li (click)="setTab('grades')" [class.active]="activeTab === 'grades'">
+          <i class="fas fa-graduation-cap"></i> Derslerim ve Notlarım
+        </li>
+      </ul>
+    </nav>
+
+    <button class="logout-btn" (click)="logout()">
+      <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+    </button>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-bar">
+      <h1>
+        {{ activeTab === 'overview' ? 'Öğrenci Özeti' : 'Derslerim ve Notlarım' }}
+      </h1>
+    </header>
+
+    <div *ngIf="activeTab === 'overview'" class="tab-content fade-in">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <i class="fas fa-book"></i>
+          <div>
+            <h4>Kayıtlı Ders Sayısı</h4>
+            <p>{{ myCoursesAndGrades.length }}</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-star"></i>
+          <div>
+            <h4>Genel Ortalama</h4>
+            <p>{{ averageGrade | number:'1.1-2' }} / 100</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-layer-group"></i>
+          <div>
+            <h4>Toplam AKTS</h4>
+            <p>{{ totalAkts }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'grades'" class="tab-content fade-in">
+      <div class="card p-4">
+        <div class="table-container" *ngIf="myCoursesAndGrades.length > 0; else noGrades">
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th>Ders Kodu</th>
+                <th>Ders Adı</th>
+                <th>Öğretmen</th>
+                <th>AKTS</th>
+                <th>Vize</th>
+                <th>Final</th>
+                <th>Ortalama</th>
+                <th>Durum</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let course of myCoursesAndGrades">
+                <td><strong>{{ course.courseCode }}</strong></td>
+                <td>{{ course.courseName }}</td>
+                <td>{{ course.teacherName }}</td>
+                <td>{{ course.akts }}</td>
+                <td>{{ course.midterm }}</td>
+                <td>{{ course.final }}</td>
+                <td>{{ (course.midterm * 0.4 + course.final * 0.6) | number:'1.1-1' }}</td>
+                <td>
+                  <span class="status-badge" 
+                        [ngClass]="(course.midterm * 0.4 + course.final * 0.6) >= 50 ? 'success' : 'danger'">
+                    {{ (course.midterm * 0.4 + course.final * 0.6) >= 50 ? 'Geçti' : 'Kaldı' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noGrades>
+          <p class="text-center text-muted py-4">Henüz kayıtlı olduğunuz bir ders bulunmuyor.</p>
+        </ng-template>
+      </div>
+    </div>
+
+  </main>
+</div>

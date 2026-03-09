@@ -43,4 +43,21 @@ export class AuthService {
       localStorage.clear();
     }
   }
+
+  // --- YENİ EKLENEN YARDIMCI METOTLAR ---
+
+  isLoggedIn(): boolean {
+    return !!this.getToken(); // Token varsa true döner, yoksa false
+  }
+
+  getRole(): string | null {
+    if (typeof window !== 'undefined') {
+      const userStr = localStorage.getItem('currentUser');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        return user.role;
+      }
+    }
+    return null;
+  }
 }

@@ -17,8 +17,6 @@ namespace OgrenciBilgiSistemiProject.Controllers
             _context = context;
         }
 
-        // --- ADMIN PANEL METOTLARI (DOKUNULMADI) ---
-
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -65,9 +63,9 @@ namespace OgrenciBilgiSistemiProject.Controllers
             return Ok(new { message = "Öğretmen başarıyla eklendi." });
         }
 
-        // --- ÖĞRETMEN DASHBOARD METOTLARI (YENİ VE GÜNCELLENMİŞ) ---
 
-        // api/Teacher/get-profile?teacherId=1
+
+
         [HttpGet("get-profile")]
         public async Task<IActionResult> GetProfile(int teacherId)
         {
@@ -84,7 +82,7 @@ namespace OgrenciBilgiSistemiProject.Controllers
             });
         }
 
-        // api/Teacher/dashboard-courses?teacherId=1
+
         [HttpGet("dashboard-courses")]
         public async Task<IActionResult> GetDashboardCourses(int teacherId)
         {
@@ -99,12 +97,10 @@ namespace OgrenciBilgiSistemiProject.Controllers
                 }).ToListAsync();
             return Ok(courses);
         }
-
-        // api/Teacher/dashboard-my-students?teacherId=1
         [HttpGet("dashboard-my-students")]
         public async Task<IActionResult> GetMyStudents(int teacherId)
         {
-            // Hocanın kendi derslerindeki TÜM öğrencileri tekrarsız getirir ("Öğrencilerim" sekmesi için)
+        
             var students = await _context.StudentCourseOfferings
                 .Include(sco => sco.Student)
                 .ThenInclude(s => s.User)
@@ -121,11 +117,9 @@ namespace OgrenciBilgiSistemiProject.Controllers
             return Ok(students);
         }
 
-        // api/Teacher/dashboard-students/{courseOfferingId}
         [HttpGet("dashboard-students/{courseOfferingId}")]
         public async Task<IActionResult> GetDashboardStudents(int courseOfferingId)
         {
-            // Sadece seçilen dersin öğrencilerini notlarıyla getirir ("Not Girişi" sekmesi için)
             var students = await _context.StudentCourseOfferings
                 .Where(sco => sco.CourseOfferingId == courseOfferingId)
                 .Include(sco => sco.Student)
@@ -141,7 +135,6 @@ namespace OgrenciBilgiSistemiProject.Controllers
             return Ok(students);
         }
 
-        // api/Teacher/dashboard-bulk-update
         [HttpPost("dashboard-bulk-update")]
         public async Task<IActionResult> DashboardBulkUpdate([FromBody] List<GradeUpdateDto> dtos)
         {

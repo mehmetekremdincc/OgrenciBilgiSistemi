@@ -6,20 +6,31 @@ import { Observable } from 'rxjs';
  providedIn: 'root'
 })
 export class StudentService {
- deleteStudent(id: number) {
-   throw new Error('Method not implemented.');
- }
+  private apiUrl = 'https://localhost:7204/api/Student';
 
- private apiUrl = 'https://localhost:7204/api/Student';
+  constructor(private http: HttpClient) {}
 
- constructor(private http: HttpClient) {}
+  // --- ADMIN PANEL İÇİN KULLANILANLAR ---
+  getStudents(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
+  }
 
- getStudents(): Observable<any[]> {
-   return this.http.get<any[]>(this.apiUrl);
- }
+  addStudent(student: any): Observable<any> {
+    return this.http.post(this.apiUrl, student);
+  }
 
- addStudent(student: any): Observable<any> {
-   return this.http.post(this.apiUrl, student);
- }
+  deleteStudent(id: number) {
+    // Admin panelinde silme işlemi için burayı doldurabilirsin
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
 
+  // --- ÖĞRENCİ DASHBOARD İÇİN KULLANILANLAR ---
+  
+  getStudentProfile(studentId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/get-profile?studentId=${studentId}`);
+  }
+
+  getMyGrades(studentId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/my-grades?studentId=${studentId}`);
+  }
 }
